@@ -6,8 +6,19 @@ import { OfflineOverlay } from './components/OfflineOverlay';
 export default function App() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isInstallable, setIsInstallable] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
 
   useEffect(() => {
+    if (window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone) {
+      setIsStandalone(true);
+    }
+    
+    const mql = window.matchMedia('(display-mode: standalone)');
+    const handleDisplayModeChange = (e: MediaQueryListEvent) => {
+      setIsStandalone(e.matches);
+    };
+    mql.addEventListener('change', handleDisplayModeChange);
+
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e);
@@ -15,7 +26,10 @@ export default function App() {
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      mql.removeEventListener('change', handleDisplayModeChange);
+    };
   }, []);
 
   const handleInstallClick = async () => {
@@ -42,10 +56,10 @@ export default function App() {
             Compix<span className="text-[#6750A4]">.</span>
           </span>
         </div>
-        {isInstallable && (
+        {(!isStandalone && isInstallable) && (
           <button 
             onClick={handleInstallClick}
-            className="flex items-center gap-2 px-4 py-2 bg-white text-[#6750A4] border border-[#EADDFF] shadow-sm rounded-xl hover:bg-[#FEF7FF] hover:border-[#6750A4]/30 transition-all font-bold text-sm"
+            className="flex items-center gap-2 px-4 py-2 bg-[#6750A4] text-white shadow-md shadow-[#6750A4]/20 rounded-xl hover:bg-[#55408a] transition-all font-bold text-sm transform active:scale-95"
             title="Install App"
           >
             <Download className="w-4 h-4" />
