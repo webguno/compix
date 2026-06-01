@@ -1,0 +1,6 @@
+{
+  "name": "Compix Image Compressor",
+  "description": "A frontend-based image compressor that reduces image size without losing quality.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
